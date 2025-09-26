@@ -57,12 +57,12 @@ for i in range(1, 3001):
     denominator += 2
     signflip *= -1
     if firstcheck == False:
-        f2 = f"{pi:.2f}"
-        if previousf2 == f2:
+        f2 = int(pi*100)
+        if previousf2 == f2 and f2 == 314:
             firstcheck = True
             print("It first hits 3.14 twice in a row at iteration", i)
     elif secondcheck == False:
-        f3 = f"{pi:.3f}"
-        if previousf3 == f3:
+        f3 = int(pi*1000)
+        if previousf3 == f3 and f3 == 3141:
             secondcheck = True
             print("It first hits 3.141 twice in a row at iteration", i)
