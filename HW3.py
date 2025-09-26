@@ -41,4 +41,28 @@ if First == Fifth and Second == Fourth:
 else:
     print("Not a palindrome....")
 
-#3.14 -
+#3.14 - (THIS MADE MY BRAIN HURT. I think I made it way more complicated than it needed to be.)
+denominator = 3
+pi = 4
+signflip = -1
+firstcheck = False
+secondcheck = False
+f3 = 0
+f2 = 0
+for i in range(1, 3001):
+    previouspi = pi
+    previousf2 = f2
+    previousf3 = f3
+    pi += (signflip * (4 / denominator))
+    denominator += 2
+    signflip *= -1
+    if firstcheck == False:
+        f2 = f"{pi:.2f}"
+        if previousf2 == f2:
+            firstcheck = True
+            print("It first hits 3.14 twice in a row at iteration", i)
+    elif secondcheck == False:
+        f3 = f"{pi:.3f}"
+        if previousf3 == f3:
+            secondcheck = True
+            print("It first hits 3.141 twice in a row at iteration", i)
