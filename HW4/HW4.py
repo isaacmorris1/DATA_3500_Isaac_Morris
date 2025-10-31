@@ -5,7 +5,6 @@ lines = file.readlines()
 prices = []
 for line in lines:
     line = float(line)
-    line = round(line, 2) # to round the price to 2 decimals
     prices.append(line)
 counter = 0
 final_profit = 0
