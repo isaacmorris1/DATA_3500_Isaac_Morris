@@ -8,24 +8,87 @@ url3 = "&localization=false"
 key1 = 'market_data'
 key2 = 'current_price'
 key3 = 'usd'
-dt = datetime(2024, 12, 1)
-coins = ["ripple", "bitcoin-cash", "ripple", "eos", "litecoin", "ethereum",
-"bitcoin"]
+start_dt = datetime(2024, 12, 3)
+results = {}
+coins = ["ripple", "bitcoin-cash", "eos", "litecoin", "ethereum", "bitcoin"]
 for coin in coins:
+    dt = start_dt
     lines = []
+    file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/"+coin+".csv", "w")
     for i in range(364):
         dt += timedelta(days=1)
         dts = dt.strftime("%d-%m-%Y")
         url = url1 + coin + url2 + dts + url3
         req = requests.get(url)
-        time.sleep(10)
+        time.sleep(15)
         d = json.loads(req.text)
-        file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/"+coin+".csv", "w")
         print(url)
-        lines.append(dts, d[key1][key2][key3] + "/n")
+        dailyprice = d[key1][key2][key3]
+        lines.append(f"{dts}, {dailyprice}\n")
+        print(f"{dts}, {dailyprice}\n")
     file.writelines(lines)
     file.close()
 
+def mean_reversion(prices):
+    buy = 0
+    first_buy = 0
+    total_profit = 0
+    i = 0
+    for price in prices:
+        if i > 4:
+            current_price = price
+            average_price = (prices[i-1] + prices[i-2] + prices[i-3] + prices[i-4] + prices[i-5])/5
+            if current_price < (average_price * 0.98) and buy == 0:
+                buy = current_price
+                print("Buying at: \t", current_price)
+                if first_buy == 0:
+                    first_buy = current_price
+            elif current_price > (average_price * 1.02) and buy != 0:
+                trade_profit = current_price - buy
+                buy = 0
+                print("Selling at: \t", current_price)
+                print("Trade Profit: \t", trade_profit)
+                total_profit += trade_profit
+        i += 1
+    return total_profit, (total_profit/first_buy)
 
+def moving_average(prices):
+    buy = 0
+    first_buy = 0
+    total_profit = 0
+    i = 0
+    for price in prices:
+        if i > 4:
+            current_price = price
+            average_price = (prices[i-1] + prices[i-2] + prices[i-3] + prices[i-4] + prices[i-5])/5
+            if current_price < average_price and buy == 0:
+                buy = current_price
+                print("Buying at: \t", current_price)
+                if first_buy == 0:
+                    first_buy = current_price
+            elif current_price > average_price * 1.02 and buy != 0:
+                trade_profit = current_price - buy
+                buy = 0
+                print("Selling at: \t", current_price)
+                print("Trade Profit: \t", trade_profit)
+                total_profit += trade_profit
+        i += 1
+    return total_profit, (total_profit/first_buy)
+
+def load_prices(file):
+    prices = [float(line.split(", ")[1]) for line in file.readlines()]
+    return prices
+
+def save_results(results):
+        json.dump(results, open("/workspaces/DATA_3500_Isaac_Morris/Final Project/results.json", "w"), indent=4)
+
+for coin in coins:
+    file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project" + coin + ".csv")
+    prices = load_prices(file)
+    results[coin + "_Prices"] = prices
+
+    total_profit, returns = mean_reversion(prices)
+    results[coin + "_MR_Profit"] = total_profit
+    results[coin + "_MR_Returns"] = returns
 
 save_results(results)
