@@ -11,23 +11,24 @@ key3 = 'usd'
 start_dt = datetime(2024, 12, 3)
 results = {}
 coins = ["ripple", "bitcoin-cash", "eos", "litecoin", "ethereum", "bitcoin"]
-for coin in coins:
-    dt = start_dt
-    lines = []
-    file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/"+coin+".csv", "w")
-    for i in range(364):
-        dt += timedelta(days=1)
-        dts = dt.strftime("%d-%m-%Y")
-        url = url1 + coin + url2 + dts + url3
-        req = requests.get(url)
-        time.sleep(15)
-        d = json.loads(req.text)
-        print(url)
-        dailyprice = d[key1][key2][key3]
-        lines.append(f"{dts}, {dailyprice}\n")
-        print(f"{dts}, {dailyprice}\n")
-    file.writelines(lines)
-    file.close()
+# for coin in coins:
+   # if coin != "ripple":
+       # dt = start_dt
+        #lines = []
+        # file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/"+coin+".csv", "w")
+        # for i in range(364):
+           # dt += timedelta(days=1)
+            #dts = dt.strftime("%d-%m-%Y")
+            #url = url1 + coin + url2 + dts + url3
+            #req = requests.get(url)
+            #time.sleep(15)
+            #d = json.loads(req.text)
+            #print(url)
+            #dailyprice = d[key1][key2][key3]
+            #lines.append(f"{dts}, {dailyprice}\n")
+            #print(f"{dts}, {dailyprice}\n")
+        #file.writelines(lines)
+        #file.close()
 
 def mean_reversion(prices):
     buy = 0
@@ -66,7 +67,7 @@ def moving_average(prices):
                 print("Buying at: \t", current_price)
                 if first_buy == 0:
                     first_buy = current_price
-            elif current_price > average_price * 1.02 and buy != 0:
+            elif current_price > average_price and buy != 0:
                 trade_profit = current_price - buy
                 buy = 0
                 print("Selling at: \t", current_price)
@@ -83,12 +84,15 @@ def save_results(results):
         json.dump(results, open("/workspaces/DATA_3500_Isaac_Morris/Final Project/results.json", "w"), indent=4)
 
 for coin in coins:
-    file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project" + coin + ".csv")
+    file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/" + coin + ".csv")
     prices = load_prices(file)
-    results[coin + "_Prices"] = prices
+    results[coin + "_Prices"] = coin.capitalize() + " Prices"
 
     total_profit, returns = mean_reversion(prices)
     results[coin + "_MR_Profit"] = total_profit
     results[coin + "_MR_Returns"] = returns
+    total_profit, returns = moving_average(prices)
+    results[coin + "_MA_Profit"] = total_profit
+    results[coin + "_MA_Returns"] = returns
 
 save_results(results)
