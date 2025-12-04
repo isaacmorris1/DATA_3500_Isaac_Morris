@@ -86,13 +86,13 @@ def save_results(results):
 for coin in coins:
     file = open("/workspaces/DATA_3500_Isaac_Morris/Final Project/" + coin + ".csv")
     prices = load_prices(file)
-    results[coin + "_Prices"] = coin.capitalize() + " Prices"
+    results[coin.capitalize() + "_Prices"] = coin.capitalize() + " Prices"
 
     total_profit, returns = mean_reversion(prices)
-    results[coin + "_MR_Profit"] = total_profit
-    results[coin + "_MR_Returns"] = returns
+    results[coin.capitalize() + "_MR_Profit"] = total_profit
+    results[coin.capitalize() + "_MR_Returns"] = returns
     total_profit, returns = moving_average(prices)
-    results[coin + "_MA_Profit"] = total_profit
-    results[coin + "_MA_Returns"] = returns
+    results[coin.capitalize() + "_MA_Profit"] = total_profit
+    results[coin.capitalize() + "_MA_Returns"] = returns
 
 save_results(results)
